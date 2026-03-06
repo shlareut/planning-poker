@@ -267,14 +267,21 @@ const PeerManager = (() => {
   function log(...args) { DebugLog.log('Peer', ...args); }
   function _setStatus(s) { log('Status →', s); if (_onConnectionStatus) _onConnectionStatus(s); }
 
-  // ICE servers: Google STUN + free TURN servers for NAT traversal
+  // ICE servers: multiple STUN + free TURN servers for NAT traversal
   const ICE_CONFIG = {
     iceServers: [
+      // STUN servers (free, no auth)
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'stun:stun2.l.google.com:19302' },
-      { urls: 'stun:stun3.l.google.com:19302' },
-      { urls: 'stun:stun4.l.google.com:19302' },
+      { urls: 'stun:stun.relay.metered.ca:80' },
+      { urls: 'stun:freestun.net:3478' },
+      // TURN server: freestun.net (free, no account)
+      {
+        urls: 'turn:freestun.net:3478',
+        username: 'free',
+        credential: 'free'
+      },
+      // TURN servers: Metered OpenRelay (free tier, old credentials)
       {
         urls: 'turn:openrelay.metered.ca:80',
         username: 'openrelayproject',
