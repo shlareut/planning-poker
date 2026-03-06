@@ -6,7 +6,6 @@
 (function () {
   'use strict';
 
-  // ═══ Constants ═══
   const CARDS = ['1', '2', '3', '5', '8', '13', '21', '34', '?', '☕'];
   const PHASE = { LOBBY: 'lobby', VOTING: 'voting', REVEALED: 'revealed' };
 
@@ -17,11 +16,12 @@
     sessionId: '',
     sessionName: '',
     storyTitle: '',
-    myId: '',            // unique user id
+    myId: '',
     myName: '',
     myVote: null,
     participants: [],    // [{ id, name, peerId, hasVoted, vote, isAdmin }]
     adminPwHash: null,
+    connected: false,
   };
 
   // ═══ DOM Refs ═══
@@ -81,6 +81,12 @@
     return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
   // ═══ Toast ═══
   function toast(text) {
     const container = $('#toast-container');
@@ -100,15 +106,25 @@
     $(`#screen-${name}`).classList.add('active');
   }
 
-  // ═══ Modal Helpers ═══
-  function openModal(id) {
-    $(id).classList.add('active');
-  }
-  function closeModal(id) {
-    $(id).classList.remove('active');
+  function openModal(id) { $(id).classList.add('active'); }
+  function closeModal(id) { $(id).classList.remove('active'); }
+
+  // ═══ Connection Status ═══
+  function setConnectionStatus(status) {
+    state.connected = status === 'connected';
+    if (status === 'connected') {
+      dom.statusDot.classList.add('connected');
+      dom.connectionStatus.textContent = 'Verbunden';
+    } else if (status === 'connecting') {
+      dom.statusDot.classList.remove('connected');
+      dom.connectionStatus.textContent = 'Verbinde...';
+    } else {
+      dom.statusDot.classList.remove('connected');
+      dom.connectionStatus.textContent = 'Getrennt';
+    }
   }
 
-  // ═══ Render Functions ═══
+  // ═══ Render ═══
   function renderParticipants() {
     dom.participantCount.textContent = state.participants.length;
     dom.participantList.innerHTML = '';
@@ -116,7 +132,6 @@
     state.participants.forEach((p) => {
       const row = document.createElement('div');
       row.className = 'participant-row';
-
       const isAdmin = p.isAdmin;
       const avatarClass = isAdmin ? 'participant-avatar participant-avatar--admin' : 'participant-avatar';
 
@@ -149,7 +164,6 @@
       return;
     }
     dom.adminPanel.style.display = '';
-
     dom.adminLobby.style.display = state.phase === PHASE.LOBBY ? '' : 'none';
     dom.adminVoting.style.display = state.phase === PHASE.VOTING ? '' : 'none';
     dom.adminRevealed.style.display = state.phase === PHASE.REVEALED ? '' : 'none';
@@ -201,19 +215,17 @@
       return;
     }
 
-    // Cards
     dom.revealedSection.style.display = '';
     dom.revealedCards.innerHTML = '';
     voted.forEach((p, i) => {
       const item = document.createElement('div');
       item.className = 'revealed-card-item';
       item.style.animationDelay = `${i * 0.1}s`;
-      const isEmoji = p.vote === '☕' || p.vote === '?';
       item.innerHTML = `
         <div class="poker-card flipped disabled" style="width:64px;height:88px">
           <div class="poker-card__inner">
             <div class="poker-card__front">?</div>
-            <div class="poker-card__back${isEmoji ? '' : ''}">${escapeHtml(p.vote)}</div>
+            <div class="poker-card__back">${escapeHtml(p.vote)}</div>
           </div>
         </div>
         <div class="revealed-card-name">${escapeHtml(p.name)}</div>
@@ -221,14 +233,12 @@
       dom.revealedCards.appendChild(item);
     });
 
-    // Stats
     const numericVotes = voted.filter((p) => !isNaN(Number(p.vote))).map((p) => Number(p.vote));
     if (numericVotes.length > 0) {
       dom.statsGrid.style.display = '';
       const avg = (numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length).toFixed(1);
       const min = Math.min(...numericVotes);
       const max = Math.max(...numericVotes);
-
       const freq = {};
       numericVotes.forEach((v) => (freq[v] = (freq[v] || 0) + 1));
       const maxFreq = Math.max(...Object.values(freq));
@@ -236,7 +246,6 @@
         .filter(([, c]) => c === maxFreq)
         .map(([v]) => v)
         .join(', ');
-
       dom.statAvg.textContent = avg;
       dom.statMin.textContent = min;
       dom.statMax.textContent = max;
@@ -249,10 +258,13 @@
   function renderLobbyHint() {
     if (state.phase === PHASE.LOBBY && !state.storyTitle) {
       dom.lobbyHint.style.display = '';
-      dom.lobbyHint.textContent =
-        state.role === 'admin'
-          ? 'Gib einen Story-Titel ein, um die Runde zu starten.'
-          : 'Warte auf den Admin...';
+      if (state.role === 'admin') {
+        dom.lobbyHint.textContent = 'Gib einen Story-Titel ein, um die Runde zu starten.';
+      } else if (!state.connected) {
+        dom.lobbyHint.textContent = 'Verbindung wird aufgebaut...';
+      } else {
+        dom.lobbyHint.textContent = 'Verbunden! Warte auf den Admin...';
+      }
     } else {
       dom.lobbyHint.style.display = 'none';
     }
@@ -267,31 +279,11 @@
     renderLobbyHint();
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
-
-  // ═══ Connection Status ═══
-  function setConnectionStatus(status) {
-    if (status === 'connected') {
-      dom.statusDot.classList.add('connected');
-      dom.connectionStatus.textContent = 'Verbunden';
-    } else if (status === 'connecting') {
-      dom.statusDot.classList.remove('connected');
-      dom.connectionStatus.textContent = 'Verbinde...';
-    } else {
-      dom.statusDot.classList.remove('connected');
-      dom.connectionStatus.textContent = 'Getrennt';
-    }
-  }
-
   // ═══ PeerJS Event Wiring ═══
   PeerManager.onConnectionStatus = setConnectionStatus;
 
   PeerManager.onGuestConnected = (peerId) => {
-    // Guest connected but hasn't sent USER_JOIN yet; we wait for the message.
+    console.log('[App] Guest connected (waiting for USER_JOIN):', peerId);
   };
 
   PeerManager.onGuestDisconnected = (peerId) => {
@@ -305,6 +297,7 @@
   };
 
   PeerManager.onMessage = (msg, fromPeerId) => {
+    console.log('[App] Message received:', msg.type, 'from', fromPeerId?.slice(0, 8));
     if (state.role === 'admin') {
       handleHostMessage(msg, fromPeerId);
     } else {
@@ -313,9 +306,13 @@
   };
 
   PeerManager.onPeerError = (err) => {
-    console.error('[App] Peer error:', err);
+    console.error('[App] Peer error:', err.type, err.message);
     if (err.type === 'peer-unavailable') {
       toast('Session nicht gefunden. Prüfe die Session-ID.');
+    } else if (err.type === 'network') {
+      toast('Netzwerkfehler — prüfe deine Internetverbindung.');
+    } else if (err.type === 'server-error') {
+      toast('PeerJS-Server nicht erreichbar. Versuche es erneut.');
     } else {
       toast('Verbindungsfehler: ' + (err.message || err.type));
     }
@@ -325,8 +322,12 @@
   function handleHostMessage(msg, fromPeerId) {
     switch (msg.type) {
       case 'USER_JOIN': {
-        // Check for duplicate
-        if (state.participants.find((p) => p.peerId === fromPeerId)) return;
+        if (state.participants.find((p) => p.peerId === fromPeerId)) {
+          // Already joined — resend SYNC_STATE in case they missed it
+          console.log('[App] Duplicate USER_JOIN, resending SYNC_STATE');
+          sendSyncState(fromPeerId);
+          return;
+        }
 
         const participant = {
           id: msg.userId || generateId(),
@@ -339,21 +340,10 @@
         state.participants.push(participant);
         toast(`${participant.name} ist beigetreten`);
 
-        // Send current state to the new guest
-        PeerManager.sendToGuest(fromPeerId, {
-          type: 'SYNC_STATE',
-          story: state.storyTitle,
-          participants: state.participants.map((p) => ({
-            id: p.id,
-            name: p.name,
-            hasVoted: p.hasVoted,
-            isAdmin: p.isAdmin,
-            vote: state.phase === PHASE.REVEALED ? p.vote : null,
-          })),
-          phase: state.phase,
-          sessionName: state.sessionName,
-        });
+        // Send full state to the new guest
+        sendSyncState(fromPeerId);
 
+        // Notify all other guests
         broadcastParticipantUpdate();
         renderAll();
         break;
@@ -369,18 +359,39 @@
         }
         break;
       }
+
+      default:
+        console.log('[App] Unknown message from guest:', msg.type);
     }
+  }
+
+  function sendSyncState(peerId) {
+    PeerManager.sendToGuest(peerId, {
+      type: 'SYNC_STATE',
+      story: state.storyTitle,
+      phase: state.phase,
+      sessionName: state.sessionName,
+      participants: state.participants.map((p) => ({
+        id: p.id,
+        name: p.name,
+        hasVoted: p.hasVoted,
+        isAdmin: p.isAdmin,
+        vote: state.phase === PHASE.REVEALED ? p.vote : null,
+      })),
+    });
   }
 
   // ═══ GUEST Message Handling ═══
   function handleGuestMessage(msg) {
     switch (msg.type) {
-      case 'SYNC_STATE':
+      case 'SYNC_STATE': {
+        console.log('[App] Received SYNC_STATE:', msg);
         state.storyTitle = msg.story || '';
         state.phase = msg.phase || PHASE.LOBBY;
         state.sessionName = msg.sessionName || state.sessionName;
         state.participants = msg.participants || [];
-        // Ensure self is in participant list
+
+        // Ensure self is in the list
         if (!state.participants.find((p) => p.id === state.myId)) {
           state.participants.push({
             id: state.myId,
@@ -390,28 +401,36 @@
             vote: null,
           });
         }
+
         dom.sessionTitle.textContent = state.sessionName || 'Planning Poker';
         state.myVote = null;
         renderAll();
+        toast('Mit Session verbunden!');
         break;
+      }
 
-      case 'PARTICIPANT_UPDATE':
-        // Merge participant updates (preserve own vote)
+      case 'PARTICIPANT_UPDATE': {
         if (msg.participants) {
           state.participants = msg.participants.map((p) => {
+            // Preserve own local vote
             if (p.id === state.myId) {
-              return { ...p, vote: state.myVote };
+              return { ...p, vote: state.myVote || p.vote };
             }
             return p;
           });
         }
         renderAll();
         break;
+      }
 
       case 'SET_STORY':
         state.storyTitle = msg.title || '';
         state.phase = PHASE.VOTING;
         state.myVote = null;
+        state.participants = state.participants.map((p) => ({
+          ...p, hasVoted: false, vote: null,
+        }));
+        toast(`Neue Story: ${msg.title}`);
         renderAll();
         break;
 
@@ -420,10 +439,7 @@
         if (msg.votes) {
           msg.votes.forEach((v) => {
             const p = state.participants.find((x) => x.id === v.userId);
-            if (p) {
-              p.vote = v.vote;
-              p.hasVoted = true;
-            }
+            if (p) { p.vote = v.vote; p.hasVoted = true; }
           });
         }
         toast('Karten aufgedeckt!');
@@ -435,9 +451,7 @@
         state.storyTitle = '';
         state.myVote = null;
         state.participants = state.participants.map((p) => ({
-          ...p,
-          hasVoted: false,
-          vote: null,
+          ...p, hasVoted: false, vote: null,
         }));
         toast('Neue Runde gestartet');
         renderAll();
@@ -448,52 +462,48 @@
         PeerManager.destroy();
         showScreen('home');
         break;
+
+      default:
+        console.log('[App] Unknown message from host:', msg.type);
     }
   }
 
   // ═══ Broadcast Helpers (Host) ═══
   function broadcastParticipantUpdate() {
-    const payload = {
+    PeerManager.broadcast({
       type: 'PARTICIPANT_UPDATE',
       participants: state.participants.map((p) => ({
         id: p.id,
         name: p.name,
         hasVoted: p.hasVoted,
         isAdmin: p.isAdmin,
-        // Don't reveal vote values during voting
         vote: state.phase === PHASE.REVEALED ? p.vote : null,
       })),
-    };
-    PeerManager.broadcast(payload);
+    });
   }
 
-  // ═══ Action Handlers ═══
+  // ═══ Actions ═══
   function handleVote(card) {
     if (state.phase !== PHASE.VOTING) return;
     state.myVote = card;
 
     if (state.role === 'admin') {
-      // Update own entry
       const me = state.participants.find((p) => p.isAdmin);
-      if (me) {
-        me.hasVoted = true;
-        me.vote = card;
-      }
+      if (me) { me.hasVoted = true; me.vote = card; }
       broadcastParticipantUpdate();
       renderAll();
     } else {
-      // Send vote to host
-      PeerManager.sendToHost({
+      const sent = PeerManager.sendToHost({
         type: 'VOTE',
         userId: state.myId,
         vote: card,
       });
+      if (!sent) {
+        toast('Verbindung unterbrochen — Vote konnte nicht gesendet werden.');
+      }
       // Optimistic local update
       const me = state.participants.find((p) => p.id === state.myId);
-      if (me) {
-        me.hasVoted = true;
-        me.vote = card;
-      }
+      if (me) { me.hasVoted = true; me.vote = card; }
       renderAll();
     }
   }
@@ -506,9 +516,7 @@
     state.phase = PHASE.VOTING;
     state.myVote = null;
     state.participants = state.participants.map((p) => ({
-      ...p,
-      hasVoted: false,
-      vote: null,
+      ...p, hasVoted: false, vote: null,
     }));
     dom.inputStory.value = '';
 
@@ -526,6 +534,7 @@
       .map((p) => ({ userId: p.id, name: p.name, vote: p.vote }));
 
     PeerManager.broadcast({ type: 'REVEAL_VOTES', votes });
+    broadcastParticipantUpdate();
     toast('Karten aufgedeckt!');
     renderAll();
   }
@@ -536,9 +545,7 @@
     state.storyTitle = '';
     state.myVote = null;
     state.participants = state.participants.map((p) => ({
-      ...p,
-      hasVoted: false,
-      vote: null,
+      ...p, hasVoted: false, vote: null,
     }));
 
     PeerManager.broadcast({ type: 'RESET_ROUND' });
@@ -561,7 +568,7 @@
     toast('Session beendet');
   }
 
-  // ═══ Session Create / Join ═══
+  // ═══ Session Create ═══
   async function createSession() {
     const pw = dom.inputAdminPw.value;
     const name = dom.inputSessionName.value.trim();
@@ -576,28 +583,27 @@
       { id: state.myId, name: 'Admin (Du)', peerId: null, hasVoted: false, vote: null, isAdmin: true },
     ];
 
-    // Hash password and store
     state.adminPwHash = await sha256(pw);
     localStorage.setItem('pp_admin_hash', state.adminPwHash);
+
+    closeModal('#modal-create');
+    showScreen('session');
+    renderAll();
 
     try {
       const peerId = await PeerManager.initHost();
       state.sessionId = peerId;
       localStorage.setItem('pp_session_id', peerId);
-
       dom.sessionTitle.textContent = state.sessionName;
       dom.sessionIdDisplay.textContent = `ID: ${peerId.slice(0, 12)}`;
-
-      closeModal('#modal-create');
-      showScreen('session');
-      toast('Session erstellt!');
-      renderAll();
+      toast('Session erstellt! Teile den Link mit deinem Team.');
     } catch (err) {
-      toast('Fehler beim Erstellen der Session');
-      console.error(err);
+      toast('Fehler beim Erstellen: ' + (err.message || 'Unbekannt'));
+      console.error('[App] Create session error:', err);
     }
   }
 
+  // ═══ Session Join ═══
   async function joinSession() {
     const displayName = dom.inputDisplayName.value.trim();
     const joinId = dom.inputJoinId.value.trim();
@@ -621,26 +627,54 @@
 
     try {
       await PeerManager.initGuest(joinId);
-      // Send join message
-      PeerManager.sendToHost({
+      console.log('[App] PeerJS connected, sending USER_JOIN...');
+
+      // Small delay to ensure the DataChannel is fully ready
+      await new Promise((r) => setTimeout(r, 200));
+
+      const sent = PeerManager.sendToHost({
         type: 'USER_JOIN',
         userId: state.myId,
         name: displayName,
       });
-      toast(`Willkommen, ${displayName}!`);
+
+      if (sent) {
+        console.log('[App] USER_JOIN sent successfully');
+      } else {
+        console.warn('[App] USER_JOIN could not be sent, retrying...');
+        // Retry after 1s
+        setTimeout(() => {
+          const retry = PeerManager.sendToHost({
+            type: 'USER_JOIN',
+            userId: state.myId,
+            name: displayName,
+          });
+          if (!retry) {
+            toast('Verbindung fehlgeschlagen. Lade die Seite neu und versuche es erneut.');
+          }
+        }, 1000);
+      }
     } catch (err) {
-      toast('Verbindung fehlgeschlagen. Prüfe die Session-ID.');
-      console.error(err);
+      console.error('[App] Join error:', err);
+      if (err.message === 'Timeout') {
+        toast('Verbindung dauert zu lange. Ist die Session noch aktiv?');
+      } else {
+        toast('Verbindung fehlgeschlagen. Prüfe die Session-ID.');
+      }
     }
   }
 
-  // ═══ URL Hash Handling ═══
+  // ═══ URL Hash ═══
   function checkUrlHash() {
     const hash = window.location.hash;
     if (hash.startsWith('#join/')) {
       const peerId = hash.slice(6);
-      dom.inputJoinId.value = peerId;
-      openModal('#modal-join');
+      if (peerId) {
+        dom.inputJoinId.value = peerId;
+        openModal('#modal-join');
+        // Focus the name field since ID is pre-filled
+        setTimeout(() => dom.inputDisplayName.focus(), 100);
+      }
     }
   }
 
@@ -657,30 +691,21 @@
       }, 2000);
       toast('Link kopiert!');
     }).catch(() => {
-      // Fallback
       prompt('Link kopieren:', link);
     });
   }
 
-  // ═══ Admin Restore on Reload ═══
-  function tryRestoreAdmin() {
-    const hash = localStorage.getItem('pp_admin_hash');
-    const sid = localStorage.getItem('pp_session_id');
-    if (hash && sid) {
-      // Could attempt reconnection here, but PeerJS IDs are ephemeral.
-      // For now, we just clean up on reload.
-      localStorage.removeItem('pp_admin_hash');
-      localStorage.removeItem('pp_session_id');
-    }
-  }
-
-  // ═══ Event Listeners ═══
+  // ═══ Init ═══
   function init() {
+    // Clean up stale localStorage
+    localStorage.removeItem('pp_admin_hash');
+    localStorage.removeItem('pp_session_id');
+
     // Home buttons
     dom.btnCreate.addEventListener('click', () => openModal('#modal-create'));
     dom.btnJoinOpen.addEventListener('click', () => openModal('#modal-join'));
 
-    // Modal overlays close on click
+    // Modal close on overlay click
     dom.modalCreate.addEventListener('click', () => closeModal('#modal-create'));
     dom.modalJoin.addEventListener('click', () => closeModal('#modal-join'));
 
@@ -695,12 +720,15 @@
 
     // Join session
     function updateJoinBtn() {
-      dom.btnJoinConfirm.disabled = !dom.inputDisplayName.value.trim() || !dom.inputJoinId.value.trim();
+      dom.btnJoinConfirm.disabled = !(dom.inputDisplayName.value.trim() && dom.inputJoinId.value.trim());
     }
     dom.inputDisplayName.addEventListener('input', updateJoinBtn);
     dom.inputJoinId.addEventListener('input', updateJoinBtn);
     dom.inputDisplayName.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') joinSession();
+    });
+    dom.inputJoinId.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') dom.inputDisplayName.focus();
     });
     dom.btnJoinConfirm.addEventListener('click', joinSession);
 
@@ -714,12 +742,10 @@
     dom.btnNextRound.addEventListener('click', handleNewRound);
     dom.btnEndSession.addEventListener('click', handleEndSession);
 
-    // Check URL hash
+    // Check URL hash for #join/PEER-ID
     checkUrlHash();
-    tryRestoreAdmin();
   }
 
-  // Start
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

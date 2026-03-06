@@ -12,211 +12,266 @@ const PeerManager = (() => {
   let hostConnection = null;   // DataConnection to host (guest only)
   let isHost = false;
   let myPeerId = null;
-  let onMessage = null;        // callback(message, fromPeerId)
-  let onPeerOpen = null;       // callback(peerId)
-  let onPeerError = null;      // callback(error)
-  let onGuestConnected = null; // callback(peerId)
-  let onGuestDisconnected = null; // callback(peerId)
-  let onConnectionStatus = null;  // callback(status: 'connecting'|'connected'|'disconnected')
 
-  /**
-   * Initialize as HOST (Admin)
-   * Creates a new Peer and listens for incoming connections.
-   * @param {string} [customId] Optional custom peer ID
-   * @returns {Promise<string>} The peer ID (= session ID)
-   */
-  function initHost(customId) {
+  // Callbacks (prefixed to avoid shadowing)
+  let _onMessage = null;
+  let _onPeerOpen = null;
+  let _onPeerError = null;
+  let _onGuestConnected = null;
+  let _onGuestDisconnected = null;
+  let _onConnectionStatus = null;
+
+  const CONNECTION_TIMEOUT = 15000;
+  const DEBUG = true;
+
+  function log(...args) {
+    if (DEBUG) console.log('[PeerManager]', ...args);
+  }
+
+  function _setStatus(status) {
+    log('Status →', status);
+    if (_onConnectionStatus) _onConnectionStatus(status);
+  }
+
+  // ─── HOST ───
+
+  function initHost() {
     isHost = true;
     return new Promise((resolve, reject) => {
-      const opts = customId ? undefined : undefined;
-      peer = customId ? new Peer(customId) : new Peer();
+      _setStatus('connecting');
+
+      try {
+        peer = new Peer();
+      } catch (e) {
+        log('Failed to create Peer:', e);
+        _setStatus('disconnected');
+        return reject(e);
+      }
 
       peer.on('open', (id) => {
+        log('Host peer open:', id);
         myPeerId = id;
         _setStatus('connected');
-        if (onPeerOpen) onPeerOpen(id);
+        if (_onPeerOpen) _onPeerOpen(id);
         resolve(id);
       });
 
       peer.on('connection', (conn) => {
-        _handleIncomingConnection(conn);
+        log('Incoming guest connection:', conn.peer);
+        _setupGuestConnection(conn);
       });
 
       peer.on('error', (err) => {
-        console.error('[PeerManager] Host error:', err);
-        if (err.type === 'unavailable-id') {
-          // ID taken, retry without custom ID
-          peer.destroy();
-          peer = new Peer();
-          peer.on('open', (id) => {
-            myPeerId = id;
-            _setStatus('connected');
-            if (onPeerOpen) onPeerOpen(id);
-            resolve(id);
-          });
-          peer.on('connection', (conn) => _handleIncomingConnection(conn));
-          peer.on('error', (e) => {
-            if (onPeerError) onPeerError(e);
-            reject(e);
-          });
-        } else {
-          if (onPeerError) onPeerError(err);
+        log('Host error:', err.type, err.message);
+        if (_onPeerError) _onPeerError(err);
+        if (!myPeerId) {
+          _setStatus('disconnected');
           reject(err);
         }
       });
 
       peer.on('disconnected', () => {
+        log('Host lost signaling server');
+        if (peer && !peer.destroyed) {
+          setTimeout(() => {
+            if (peer && !peer.destroyed && peer.disconnected) {
+              log('Host reconnecting to signaling...');
+              peer.reconnect();
+            }
+          }, 1000);
+        }
+      });
+
+      peer.on('close', () => {
+        log('Host peer destroyed');
         _setStatus('disconnected');
-        // Try to reconnect
-        if (!peer.destroyed) peer.reconnect();
       });
     });
   }
 
-  /**
-   * Initialize as GUEST and connect to the host.
-   * @param {string} hostPeerId The session ID / host peer ID
-   * @returns {Promise<void>}
-   */
+  // ─── GUEST ───
+
   function initGuest(hostPeerId) {
     isHost = false;
     return new Promise((resolve, reject) => {
-      peer = new Peer();
+      _setStatus('connecting');
+
+      try {
+        peer = new Peer();
+      } catch (e) {
+        log('Failed to create Peer:', e);
+        _setStatus('disconnected');
+        return reject(e);
+      }
+
+      let settled = false;
+      let timeoutId = null;
+
+      function settle(success, error) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        success ? resolve() : reject(error || new Error('Connection failed'));
+      }
 
       peer.on('open', (id) => {
+        log('Guest peer open:', id, '→ connecting to host:', hostPeerId);
         myPeerId = id;
-        _setStatus('connecting');
 
-        hostConnection = peer.connect(hostPeerId, { reliable: true });
+        try {
+          hostConnection = peer.connect(hostPeerId, {
+            reliable: true,
+            serialization: 'json',
+          });
+        } catch (e) {
+          log('peer.connect() threw:', e);
+          _setStatus('disconnected');
+          return settle(false, e);
+        }
+
+        // Timeout
+        timeoutId = setTimeout(() => {
+          log('Connection timeout after', CONNECTION_TIMEOUT, 'ms');
+          _setStatus('disconnected');
+          settle(false, new Error('Timeout'));
+        }, CONNECTION_TIMEOUT);
 
         hostConnection.on('open', () => {
+          log('DataChannel to host OPEN');
           _setStatus('connected');
-          resolve();
+          settle(true);
         });
 
         hostConnection.on('data', (data) => {
-          if (onMessage) onMessage(data, hostPeerId);
+          log('← Host:', data.type);
+          if (_onMessage) _onMessage(data, hostPeerId);
         });
 
         hostConnection.on('close', () => {
+          log('DataChannel to host closed');
           _setStatus('disconnected');
           hostConnection = null;
         });
 
         hostConnection.on('error', (err) => {
-          console.error('[PeerManager] Guest connection error:', err);
+          log('DataChannel error:', err);
           _setStatus('disconnected');
+          settle(false, err);
         });
       });
 
       peer.on('error', (err) => {
-        console.error('[PeerManager] Guest error:', err);
-        if (onPeerError) onPeerError(err);
+        log('Guest peer error:', err.type, err.message);
+        if (_onPeerError) _onPeerError(err);
         _setStatus('disconnected');
-        reject(err);
+        settle(false, err);
       });
 
       peer.on('disconnected', () => {
+        log('Guest lost signaling server');
+        // DataChannel may still be alive — only reconnect if it isn't
+        if (hostConnection && hostConnection.open) {
+          log('DataChannel still open, ignoring signaling loss');
+        } else if (peer && !peer.destroyed) {
+          setTimeout(() => {
+            if (peer && !peer.destroyed && peer.disconnected) {
+              log('Guest reconnecting signaling...');
+              peer.reconnect();
+            }
+          }, 2000);
+        }
+      });
+
+      peer.on('close', () => {
+        log('Guest peer destroyed');
         _setStatus('disconnected');
-        if (!peer.destroyed) peer.reconnect();
       });
     });
   }
 
-  /**
-   * Handle an incoming connection from a guest (host only).
-   */
-  function _handleIncomingConnection(conn) {
+  // ─── Guest connection handler (host side) ───
+
+  function _setupGuestConnection(conn) {
     conn.on('open', () => {
+      log('Guest DataChannel open:', conn.peer);
       connections.set(conn.peer, conn);
-      if (onGuestConnected) onGuestConnected(conn.peer);
+      if (_onGuestConnected) _onGuestConnected(conn.peer);
     });
 
     conn.on('data', (data) => {
-      if (onMessage) onMessage(data, conn.peer);
+      log('← Guest', conn.peer.slice(0, 8), ':', data.type);
+      if (_onMessage) _onMessage(data, conn.peer);
     });
 
     conn.on('close', () => {
+      log('Guest disconnected:', conn.peer);
       connections.delete(conn.peer);
-      if (onGuestDisconnected) onGuestDisconnected(conn.peer);
+      if (_onGuestDisconnected) _onGuestDisconnected(conn.peer);
     });
 
     conn.on('error', (err) => {
-      console.error('[PeerManager] Connection error with', conn.peer, err);
+      log('Guest conn error:', conn.peer, err);
       connections.delete(conn.peer);
-      if (onGuestDisconnected) onGuestDisconnected(conn.peer);
+      if (_onGuestDisconnected) _onGuestDisconnected(conn.peer);
     });
   }
 
-  /**
-   * Send a message to the host (guest only).
-   */
+  // ─── Messaging ───
+
   function sendToHost(message) {
     if (!hostConnection || !hostConnection.open) {
-      console.warn('[PeerManager] No open connection to host.');
-      return;
+      log('WARN: sendToHost failed — no open connection');
+      return false;
     }
+    log('→ Host:', message.type);
     hostConnection.send(message);
+    return true;
   }
 
-  /**
-   * Send a message to a specific guest (host only).
-   */
   function sendToGuest(peerId, message) {
     const conn = connections.get(peerId);
-    if (conn && conn.open) {
-      conn.send(message);
+    if (!conn || !conn.open) {
+      log('WARN: sendToGuest failed —', peerId.slice(0, 8), 'not connected');
+      return false;
     }
+    log('→ Guest', peerId.slice(0, 8), ':', message.type);
+    conn.send(message);
+    return true;
   }
 
-  /**
-   * Broadcast a message to ALL connected guests (host only).
-   */
   function broadcast(message) {
-    connections.forEach((conn) => {
-      if (conn.open) conn.send(message);
+    let sent = 0;
+    connections.forEach((conn, peerId) => {
+      if (conn.open) {
+        conn.send(message);
+        sent++;
+      }
     });
+    log('Broadcast', message.type, 'to', sent, '/', connections.size, 'guests');
   }
 
-  /**
-   * Get the number of connected guests.
-   */
-  function getGuestCount() {
-    return connections.size;
+  // ─── Utilities ───
+
+  function getGuestCount() { return connections.size; }
+  function getMyPeerId() { return myPeerId; }
+  function getIsHost() { return isHost; }
+
+  function isConnected() {
+    if (isHost) return peer && !peer.destroyed && !peer.disconnected;
+    return hostConnection != null && hostConnection.open;
   }
 
-  /**
-   * Destroy the peer, close all connections.
-   */
   function destroy() {
-    if (peer && !peer.destroyed) {
-      peer.destroy();
-    }
+    log('Destroying peer...');
+    if (peer && !peer.destroyed) peer.destroy();
     connections.clear();
     hostConnection = null;
     peer = null;
     myPeerId = null;
+    _setStatus('disconnected');
   }
 
-  function _setStatus(status) {
-    if (onConnectionStatus) onConnectionStatus(status);
-  }
-
-  /**
-   * Get my peer ID.
-   */
-  function getMyPeerId() {
-    return myPeerId;
-  }
-
-  /**
-   * Check if this instance is the host.
-   */
-  function getIsHost() {
-    return isHost;
-  }
-
-  // Public API
+  // ─── Public API ───
   return {
     initHost,
     initGuest,
@@ -226,14 +281,14 @@ const PeerManager = (() => {
     getGuestCount,
     getMyPeerId,
     getIsHost,
+    isConnected,
     destroy,
 
-    // Event setters
-    set onMessage(fn) { onMessage = fn; },
-    set onPeerOpen(fn) { onPeerOpen = fn; },
-    set onPeerError(fn) { onPeerError = fn; },
-    set onGuestConnected(fn) { onGuestConnected = fn; },
-    set onGuestDisconnected(fn) { onGuestDisconnected = fn; },
-    set onConnectionStatus(fn) { onConnectionStatus = fn; },
+    set onMessage(fn) { _onMessage = fn; },
+    set onPeerOpen(fn) { _onPeerOpen = fn; },
+    set onPeerError(fn) { _onPeerError = fn; },
+    set onGuestConnected(fn) { _onGuestConnected = fn; },
+    set onGuestDisconnected(fn) { _onGuestDisconnected = fn; },
+    set onConnectionStatus(fn) { _onConnectionStatus = fn; },
   };
 })();
