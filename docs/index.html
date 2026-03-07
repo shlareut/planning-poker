@@ -28,11 +28,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes cardReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes emojiThrow{
-  0%{opacity:1;transform:translate(0,0) scale(.7) rotate(0deg)}
-  30%{opacity:1;transform:translate(calc(var(--dx)*.4),calc(var(--dy)*.3 - 80px)) scale(1.4) rotate(calc(var(--rot)*.3))}
-  60%{opacity:1;transform:translate(calc(var(--dx)*.75),calc(var(--dy)*.7 - 40px)) scale(1.1) rotate(calc(var(--rot)*.7))}
-  85%{opacity:1;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(var(--rot))}
-  100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 10px)) scale(.3) rotate(var(--rot))}
+  0%{offset-distance:0%;opacity:1;transform:scale(.6) rotate(0deg)}
+  70%{opacity:1;transform:scale(1.05) rotate(var(--rot))}
+  100%{offset-distance:100%;opacity:0;transform:scale(.4) rotate(var(--rot))}
 }
 .fade-up{animation:fadeUp .6s ease}
 
@@ -174,8 +172,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .emoji-btn.selected-emoji{border-color:var(--primary);background:rgba(0,78,250,.2);box-shadow:0 0 12px var(--primary-glow)}
 
 .flying-emoji{
-  position:fixed;font-size:32px;pointer-events:none;z-index:9998;
-  animation:emojiThrow .8s cubic-bezier(.2,.6,.3,1) forwards;
+  position:fixed;font-size:24px;pointer-events:none;z-index:9998;
+  will-change:transform,opacity,offset-distance;
+  animation:emojiThrow .75s cubic-bezier(.25,.1,.25,1) forwards;
 }
 
 .config-missing{max-width:480px;margin:60px auto;padding:24px;text-align:center}
@@ -319,7 +318,7 @@ const FIREBASE_CONFIG = {
 };
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
-import { getDatabase, ref, set, get, update, onValue, remove, onDisconnect, push, onChildAdded }
+import { getDatabase, ref, set, get, update, onValue, remove, onDisconnect, push, onChildAdded, query, orderByChild, endBefore }
   from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js';
 
 const isConfigured = FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('PASTE');
@@ -514,30 +513,47 @@ function animateEmoji(emoji, targetPid){
   if(!targetAvatar)return;
 
   const rect=targetAvatar.getBoundingClientRect();
-  const targetX=rect.left+rect.width/2;
-  const targetY=rect.top+rect.height/2;
+  const tx=rect.left+rect.width/2;
+  const ty=rect.top+rect.height/2;
 
-  // Random: start from left or right edge
+  // Start from random left or right edge
   const fromLeft=Math.random()>.5;
-  const startX=fromLeft? -30 : window.innerWidth+30;
-  // Random vertical offset near the target's Y, ±100px
-  const startY=targetY + (Math.random()*200-100);
+  const sx=fromLeft? -20 : window.innerWidth+20;
+  const sy=ty+(Math.random()*120-60);
 
-  const dx=targetX-startX;
-  const dy=targetY-startY;
-  // Rotation: spin in the throw direction
-  const rot=(fromLeft?1:-1)*(180+Math.random()*360);
+  // Control point for quadratic bezier (arc peak above the midpoint)
+  const cx=(sx+tx)/2;
+  const cy=Math.min(sy,ty)-80-Math.random()*60;
 
   const el=document.createElement('div');
   el.className='flying-emoji';
   el.textContent=emoji;
-  el.style.left=startX+'px';
-  el.style.top=startY+'px';
-  el.style.setProperty('--dx',dx+'px');
-  el.style.setProperty('--dy',dy+'px');
-  el.style.setProperty('--rot',rot+'deg');
+  el.style.left='0px';
+  el.style.top='0px';
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(),900);
+
+  const duration=650;
+  const rotEnd=(fromLeft?1:-1)*(200+Math.random()*160);
+  const start=performance.now();
+
+  function frame(now){
+    let t=(now-start)/duration;
+    if(t>1)t=1;
+    // Ease out cubic
+    const e=1-Math.pow(1-t,3);
+    // Quadratic bezier: B(t) = (1-t)²·P0 + 2(1-t)t·C + t²·P1
+    const u=1-e;
+    const x=u*u*sx + 2*u*e*cx + e*e*tx;
+    const y=u*u*sy + 2*u*e*cy + e*e*ty;
+    const scale=t<.7 ? .6+t*(.45/.7) : 1.05-(t-.7)*(.65/.3);
+    const rot=e*rotEnd;
+    const opacity=t>.75 ? 1-(t-.75)/.25 : 1;
+    el.style.transform=`translate(${x}px,${y}px) scale(${scale}) rotate(${rot}deg)`;
+    el.style.opacity=opacity;
+    if(t<1){requestAnimationFrame(frame)}
+    else{el.remove()}
+  }
+  requestAnimationFrame(frame);
 }
 
 // ═══ Firebase Listeners ═══
@@ -673,9 +689,34 @@ async function joinSession(){
   toast(`Willkommen, ${name}!`);
 }
 
+// ═══ Auto-Cleanup: delete sessions older than 24h ═══
+async function cleanupOldSessions(){
+  try{
+    const cutoff=Date.now()-24*60*60*1000;
+    const sessionsRef=ref(db,'sessions');
+    const snap=await get(sessionsRef);
+    if(!snap.exists())return;
+    const sessions=snap.val();
+    let cleaned=0;
+    for(const [sid,sdata] of Object.entries(sessions)){
+      const created=sdata?.state?.createdAt||0;
+      const hasParticipants=sdata?.participants&&Object.keys(sdata.participants).length>0;
+      // Delete if older than 24h OR if no participants and older than 1h
+      if(created<cutoff || (!hasParticipants&&created<Date.now()-60*60*1000)){
+        await remove(ref(db,`sessions/${sid}`));
+        cleaned++;
+      }
+    }
+    if(cleaned>0)console.log(`[Cleanup] ${cleaned} alte Session(s) gelöscht`);
+  }catch(e){console.log('[Cleanup] Fehler:',e)}
+}
+
 // ═══ Init ═══
 function init(){
   if(!isConfigured)return;
+
+  // Run cleanup on every app load
+  cleanupOldSessions();
 
   $('#btn-create').addEventListener('click',()=>openModal('#modal-create'));
   $('#btn-join-open').addEventListener('click',()=>openModal('#modal-join'));
