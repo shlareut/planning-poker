@@ -21,20 +21,16 @@
 ::selection{background:var(--primary);color:#fff}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-
 .screen{display:none}.screen.active{display:block}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 @keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(40px)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes cardReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fade-up{animation:fadeUp .6s ease}
-
 #toast-container{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .toast{background:rgba(99,102,241,.95);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;letter-spacing:-.02em;box-shadow:0 8px 32px var(--primary-glow);animation:toastIn .3s ease;max-width:300px}
 .toast--exit{animation:toastOut .3s ease forwards}
-
 .btn{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:-.02em;border:none;border-radius:var(--radius);cursor:pointer;transition:all .15s ease;padding:14px 24px;white-space:nowrap}
 .btn:active{transform:scale(.97)}.btn:disabled{cursor:default;opacity:.5}
 .btn--primary{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;box-shadow:0 4px 24px var(--primary-glow)}
@@ -43,15 +39,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .btn--small{padding:8px 14px;font-size:11px;font-weight:600;background:var(--bg-elevated);color:#94a3b8;border:1px solid var(--border);border-radius:var(--radius-sm)}
 .btn--small.copied{background:rgba(34,197,94,.15);color:var(--success);border-color:rgba(34,197,94,.3)}
 .btn--full{width:100%}
-
 .input{font-family:var(--font);font-size:13px;padding:12px 14px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--text);outline:none;width:100%;transition:border-color .2s}
 .input:focus{border-color:var(--primary)}.input--dark{background:rgba(0,0,0,.4)}
-
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
 .modal-overlay.active{display:flex}
 .modal{background:var(--bg-card);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:360px;border:1px solid var(--border);box-shadow:0 24px 64px rgba(0,0,0,.5);animation:fadeUp .3s ease;display:flex;flex-direction:column;gap:12px}
 .modal-title{font-size:18px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px}
-
 #screen-home{min-height:100vh;min-height:100dvh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
 #screen-home.active{display:flex}
 .home-bg-orb{position:absolute;border-radius:50%;pointer-events:none}
@@ -65,26 +58,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .home-subtitle{color:var(--text-muted);font-size:13px;margin-bottom:40px;letter-spacing:-.01em}
 .home-buttons{display:flex;flex-direction:column;gap:12px;width:280px;margin:0 auto}
 .home-footer{color:#334155;font-size:10px;margin-top:32px;letter-spacing:.02em;text-transform:uppercase}
-
 #screen-session{max-width:520px;margin:0 auto;padding:16px 16px 140px}
 .session-header{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:20px}
 .session-header__title{font-size:16px;font-weight:800;letter-spacing:-.03em}
 .session-header__meta{display:flex;align-items:center;gap:8px;margin-top:4px}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--warning)}
-.status-dot.connected{background:var(--success);box-shadow:0 0 8px rgba(34,197,94,.5);animation:pulse 2s infinite}
-.session-header__id,.session-header__status{font-size:11px;color:var(--text-muted)}
-
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(34,197,94,.5);animation:pulse 2s infinite}
+.session-header__id{font-size:11px;color:var(--text-muted)}
 .story-banner{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;animation:fadeUp .3s ease}
 .story-banner__label{font-size:10px;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
 .story-banner__title{font-size:14px;font-weight:700;color:var(--text)}
-
 .admin-panel{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.12);border-radius:var(--radius);padding:16px;margin-bottom:20px}
 .admin-panel__label{font-size:10px;color:var(--warning);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
 .admin-row{display:flex;gap:8px}
-
 .section{margin-bottom:20px}
 .section-label{font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-
 .participant-list{display:flex;flex-direction:column;gap:6px}
 .participant-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:var(--bg-elevated);border:1px solid var(--border)}
 .participant-row__left{display:flex;align-items:center;gap:10px}
@@ -94,20 +81,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .participant-badge{font-size:10px;color:var(--warning);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 .participant-vote-badge{background:linear-gradient(135deg,var(--primary-dark),var(--accent));color:#fff;padding:4px 12px;border-radius:var(--radius-sm);font-size:16px;font-weight:800}
 .vote-status{font-size:18px}
-
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;margin-bottom:20px}
 .stat-card{background:rgba(99,102,241,.1);border:1px solid var(--border-accent);border-radius:var(--radius);padding:12px 8px;text-align:center}
 .stat-value{font-size:22px;font-weight:800;color:#a5b4fc}
 .stat-label{font-size:10px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
-
 .revealed-cards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .revealed-card-item{text-align:center;animation:cardReveal .4s ease both}
 .revealed-card-name{font-size:10px;color:#94a3b8;margin-top:6px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lobby-hint{text-align:center;padding:32px 0;color:var(--text-dim);font-size:13px}
-
 .card-dock{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,var(--bg) 60%,transparent);padding:24px 16px;z-index:50}
 .card-dock__inner{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:520px;margin:0 auto}
-
 .poker-card{perspective:600px;cursor:pointer;width:64px;height:88px;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .poker-card.disabled{cursor:default;pointer-events:none}
 .poker-card__inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
@@ -117,28 +100,31 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .poker-card__front.emoji{font-size:24px}
 .poker-card.selected .poker-card__front{border-color:#818cf8;background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;box-shadow:0 0 24px rgba(99,102,241,.4)}
 .poker-card__back{transform:rotateY(180deg);border:2px solid #818cf8;background:linear-gradient(135deg,var(--primary-dark),var(--accent));font-size:24px;font-weight:800;color:#fff;box-shadow:0 0 32px rgba(99,102,241,.5)}
-
-#debug-panel{position:fixed;bottom:0;left:0;right:0;max-height:150px;overflow-y:auto;background:rgba(0,0,0,.9);border-top:1px solid #333;padding:8px 10px;font-size:10px;color:#94a3b8;z-index:9998;font-family:monospace;display:none}
-#debug-panel.visible{display:block}
-#debug-toggle{position:fixed;bottom:8px;right:8px;z-index:9999;width:32px;height:32px;border-radius:50%;background:#1e293b;border:1px solid #333;color:#64748b;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
+.config-missing{max-width:480px;margin:60px auto;padding:24px;text-align:center}
+.config-missing h1{font-size:20px;font-weight:800;margin-bottom:16px;color:var(--danger)}
+.config-missing p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:12px}
+.config-missing code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:12px}
 @media(max-width:400px){
-  .home-title{font-size:26px}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .poker-card{width:56px;height:78px}
-  .poker-card__front{font-size:18px}
-  .poker-card__back{font-size:20px}
+  .home-title{font-size:26px}.stats-grid{grid-template-columns:repeat(2,1fr)}
+  .poker-card{width:56px;height:78px}.poker-card__front{font-size:18px}.poker-card__back{font-size:20px}
 }
   </style>
 </head>
 <body>
 
 <div id="toast-container"></div>
-<div id="debug-panel"></div>
-<button id="debug-toggle" title="Debug-Log">🔧</button>
+
+<!-- ═══ CONFIG MISSING SCREEN ═══ -->
+<div id="screen-config" class="screen">
+  <div class="config-missing">
+    <h1>Firebase nicht konfiguriert</h1>
+    <p>Öffne die <code>index.html</code> und ersetze den <code>FIREBASE_CONFIG</code> Block mit deiner Firebase-Konfiguration.</p>
+    <p>Anleitung: Siehe <code>SETUP.md</code> im Repository.</p>
+  </div>
+</div>
 
 <!-- ═══ HOME ═══ -->
-<div id="screen-home" class="screen active">
+<div id="screen-home" class="screen">
   <div class="home-bg-orb home-bg-orb--top"></div>
   <div class="home-bg-orb home-bg-orb--bottom"></div>
   <div class="home-content fade-up">
@@ -148,12 +134,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <div class="logo-card" style="transform:rotate(8deg)">13</div>
     </div>
     <h1 class="home-title">Planning Poker</h1>
-    <p class="home-subtitle">Schätze Stories im Team · Kein Account nötig · P2P via WebRTC</p>
+    <p class="home-subtitle">Schätze Stories im Team · Echtzeit via Firebase</p>
     <div class="home-buttons">
       <button class="btn btn--primary" id="btn-create">✦ Neue Session erstellen</button>
       <button class="btn btn--ghost" id="btn-join-open">Session beitreten →</button>
     </div>
-    <p class="home-footer">P2P · PeerJS · WebRTC</p>
+    <p class="home-footer">Firebase Realtime DB · Kein Backend nötig</p>
   </div>
   <div class="modal-overlay" id="modal-create">
     <div class="modal" onclick="event.stopPropagation()">
@@ -176,12 +162,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <!-- ═══ SESSION ═══ -->
 <div id="screen-session" class="screen">
   <header class="session-header">
-    <div class="session-header__info">
+    <div>
       <h1 class="session-header__title" id="session-title">Planning Poker</h1>
       <div class="session-header__meta">
-        <span class="status-dot" id="status-dot"></span>
+        <span class="status-dot"></span>
         <span class="session-header__id" id="session-id-display">ID: –</span>
-        <span class="session-header__status" id="connection-status">Verbinde...</span>
       </div>
     </div>
     <button class="btn btn--small" id="btn-copy-link">Link kopieren</button>
@@ -218,525 +203,302 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <div class="section-label">Aufgedeckte Karten</div>
     <div class="revealed-cards" id="revealed-cards"></div>
   </div>
-  <div class="lobby-hint" id="lobby-hint">Gib einen Story-Titel ein, um die Runde zu starten.</div>
+  <div class="lobby-hint" id="lobby-hint"></div>
   <div class="card-dock" id="card-dock" style="display:none">
     <div class="card-dock__inner" id="card-deck"></div>
   </div>
 </div>
 
-<!-- PeerJS CDN with cache bust -->
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<!-- ═══ Firebase SDK + App Logic ═══ -->
+<script type="module">
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  🔥 FIREBASE CONFIG — REPLACE THIS WITH YOUR OWN CONFIG    ║
+// ╚══════════════════════════════════════════════════════════════╝
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCAaV1KSLz4TqjhRMDGt9lv6IP_QGIBrKY",
+  authDomain: "shlareut-planning-poker.firebaseapp.com",
+  databaseURL: "https://shlareut-planning-poker-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "shlareut-planning-poker",
+  storageBucket: "shlareut-planning-poker.firebasestorage.app",
+  messagingSenderId: "944156062331",
+  appId: "1:944156062331:web:f8c2b367576fd4fb1ce8de"
+};
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  ⬆️  Get this from Firebase Console → Project Settings      ║
+// ╚══════════════════════════════════════════════════════════════╝
 
-<script>
-// ═══════════════════════════════════════════════════════════════════
-// DEBUG LOGGER
-// ═══════════════════════════════════════════════════════════════════
-const DebugLog = (() => {
-  const panel = document.getElementById('debug-panel');
-  const toggle = document.getElementById('debug-toggle');
-  toggle.addEventListener('click', () => panel.classList.toggle('visible'));
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
+import { getDatabase, ref, set, get, update, onValue, remove, onDisconnect, push }
+  from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js';
 
-  function log(source, ...args) {
-    const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-    const line = document.createElement('div');
-    line.textContent = `[${new Date().toLocaleTimeString()}] [${source}] ${msg}`;
-    panel.appendChild(line);
-    panel.scrollTop = panel.scrollHeight;
-    console.log(`[${source}]`, ...args);
-  }
-  return { log };
-})();
+// ═══ Check config ═══
+const isConfigured = FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('PASTE');
+if (!isConfigured) {
+  document.getElementById('screen-config').classList.add('active');
+}
 
-// ═══════════════════════════════════════════════════════════════════
-// PEER MANAGER
-// ═══════════════════════════════════════════════════════════════════
-const PeerManager = (() => {
-  let peer = null;
-  let connections = new Map();
-  let hostConnection = null;
-  let isHost = false;
-  let myPeerId = null;
+// ═══ Init Firebase ═══
+let db = null;
+if (isConfigured) {
+  const app = initializeApp(FIREBASE_CONFIG);
+  db = getDatabase(app);
+}
 
-  let _onMessage = null;
-  let _onGuestConnected = null;
-  let _onGuestDisconnected = null;
-  let _onConnectionStatus = null;
+// ═══ Constants ═══
+const CARDS = ['1','2','3','5','8','13','21','34','?','☕'];
+const PHASE = { LOBBY:'lobby', VOTING:'voting', REVEALED:'revealed' };
 
-  const TIMEOUT = 20000;
+// ═══ State ═══
+const state = { role:null, phase:PHASE.LOBBY, sessionId:'', sessionName:'', storyTitle:'', myId:'', myName:'', myVote:null, isAdmin:false, participants:{} };
 
-  function log(...args) { DebugLog.log('Peer', ...args); }
-  function _setStatus(s) { log('Status →', s); if (_onConnectionStatus) _onConnectionStatus(s); }
+// ═══ DOM ═══
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const dom={
+  modalCreate:$('#modal-create'),modalJoin:$('#modal-join'),
+  inputAdminName:$('#input-admin-name'),inputSessionName:$('#input-session-name'),
+  btnCreateConfirm:$('#btn-create-confirm'),
+  inputJoinId:$('#input-join-id'),inputDisplayName:$('#input-display-name'),
+  btnJoinConfirm:$('#btn-join-confirm'),
+  sessionTitle:$('#session-title'),sessionIdDisplay:$('#session-id-display'),
+  btnCopyLink:$('#btn-copy-link'),
+  storyBanner:$('#story-banner'),storyTitleDisplay:$('#story-title-display'),
+  adminPanel:$('#admin-panel'),adminLobby:$('#admin-lobby'),adminVoting:$('#admin-voting'),adminRevealed:$('#admin-revealed'),
+  inputStory:$('#input-story'),
+  participantList:$('#participant-list'),participantCount:$('#participant-count'),
+  statsGrid:$('#stats-grid'),statAvg:$('#stat-avg'),statMin:$('#stat-min'),statMax:$('#stat-max'),statMode:$('#stat-mode'),
+  revealedSection:$('#revealed-section'),revealedCards:$('#revealed-cards'),
+  lobbyHint:$('#lobby-hint'),cardDock:$('#card-dock'),cardDeck:$('#card-deck'),
+};
 
-  // ICE servers: multiple STUN + free TURN servers for NAT traversal
-  const ICE_CONFIG = {
-    iceServers: [
-      // STUN servers (free, no auth)
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'stun:stun.relay.metered.ca:80' },
-      { urls: 'stun:freestun.net:3478' },
-      // TURN server: freestun.net (free, no account)
-      {
-        urls: 'turn:freestun.net:3478',
-        username: 'free',
-        credential: 'free'
-      },
-      // TURN servers: Metered OpenRelay (free tier, old credentials)
-      {
-        urls: 'turn:openrelay.metered.ca:80',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-      },
-      {
-        urls: 'turn:openrelay.metered.ca:443',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-      },
-      {
-        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-      }
-    ]
-  };
+// ═══ Utility ═══
+function genId(){return Math.random().toString(36).slice(2,8)}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function toast(t){const c=$('#toast-container'),el=document.createElement('div');el.className='toast';el.textContent=t;c.appendChild(el);setTimeout(()=>{el.classList.add('toast--exit');setTimeout(()=>el.remove(),300)},3000)}
+function showScreen(n){$$('.screen').forEach(s=>s.classList.remove('active'));$(`#screen-${n}`).classList.add('active')}
+function openModal(id){$(id).classList.add('active')}
+function closeModal(id){$(id).classList.remove('active')}
 
-  function _createPeer() {
-    log('Creating Peer with ICE config...');
-    return new Peer({
-      config: ICE_CONFIG,
-      debug: 2  // PeerJS debug level: 0=none, 1=errors, 2=warnings, 3=all
-    });
-  }
+// ═══ Firebase Helpers ═══
+function sessionRef(path=''){return ref(db,`sessions/${state.sessionId}${path?'/'+path:''}`);}
 
-  function initHost() {
-    isHost = true;
-    return new Promise((resolve, reject) => {
-      _setStatus('connecting');
-      try { peer = _createPeer(); } catch(e) { log('Create failed:', e); _setStatus('disconnected'); return reject(e); }
+// ═══ Render ═══
+function renderParticipants(){
+  const ps=Object.values(state.participants);
+  dom.participantCount.textContent=ps.length;
+  dom.participantList.innerHTML='';
+  ps.forEach(p=>{
+    const row=document.createElement('div');row.className='participant-row';
+    const ac=p.isAdmin?'participant-avatar participant-avatar--admin':'participant-avatar';
+    let vh='';
+    if(state.phase===PHASE.REVEALED&&p.vote)vh=`<div class="participant-vote-badge">${esc(p.vote)}</div>`;
+    else if(p.hasVoted)vh='<div class="vote-status">✅</div>';
+    else vh='<div class="vote-status" style="opacity:.4">⬜</div>';
+    row.innerHTML=`<div class="participant-row__left"><div class="${ac}">${esc((p.name||'?').charAt(0).toUpperCase())}</div><div><div class="participant-name">${esc(p.name||'?')}</div>${p.isAdmin?'<div class="participant-badge">Admin</div>':''}</div></div>${vh}`;
+    dom.participantList.appendChild(row);
+  });
+}
+function renderAdminPanel(){
+  if(!state.isAdmin){dom.adminPanel.style.display='none';return;}
+  dom.adminPanel.style.display='';
+  dom.adminLobby.style.display=state.phase===PHASE.LOBBY?'':'none';
+  dom.adminVoting.style.display=state.phase===PHASE.VOTING?'':'none';
+  dom.adminRevealed.style.display=state.phase===PHASE.REVEALED?'':'none';
+}
+function renderStory(){
+  if(state.storyTitle){dom.storyBanner.style.display='';dom.storyTitleDisplay.textContent=state.storyTitle;}
+  else dom.storyBanner.style.display='none';
+}
+function renderCardDeck(){
+  if(state.phase!==PHASE.VOTING){dom.cardDock.style.display='none';return;}
+  dom.cardDock.style.display='';dom.cardDeck.innerHTML='';
+  CARDS.forEach(card=>{
+    const el=document.createElement('div');
+    el.className='poker-card'+(state.myVote===card?' selected':'');
+    const em=card==='☕'||card==='?';
+    el.innerHTML=`<div class="poker-card__inner"><div class="poker-card__front${em?' emoji':''}">${esc(card)}</div><div class="poker-card__back">${esc(card)}</div></div>`;
+    el.addEventListener('click',()=>handleVote(card));
+    dom.cardDeck.appendChild(el);
+  });
+}
+function renderRevealedCards(){
+  if(state.phase!==PHASE.REVEALED){dom.revealedSection.style.display='none';dom.statsGrid.style.display='none';return;}
+  const voted=Object.values(state.participants).filter(p=>p.vote);
+  if(!voted.length){dom.revealedSection.style.display='none';dom.statsGrid.style.display='none';return;}
+  dom.revealedSection.style.display='';dom.revealedCards.innerHTML='';
+  voted.forEach((p,i)=>{
+    const it=document.createElement('div');it.className='revealed-card-item';it.style.animationDelay=`${i*.1}s`;
+    it.innerHTML=`<div class="poker-card flipped disabled" style="width:64px;height:88px"><div class="poker-card__inner"><div class="poker-card__front">?</div><div class="poker-card__back">${esc(p.vote)}</div></div></div><div class="revealed-card-name">${esc(p.name)}</div>`;
+    dom.revealedCards.appendChild(it);
+  });
+  const nv=voted.filter(p=>!isNaN(Number(p.vote))).map(p=>Number(p.vote));
+  if(nv.length){
+    dom.statsGrid.style.display='';
+    const avg=(nv.reduce((a,b)=>a+b,0)/nv.length).toFixed(1),min=Math.min(...nv),max=Math.max(...nv);
+    const fr={};nv.forEach(v=>fr[v]=(fr[v]||0)+1);const mf=Math.max(...Object.values(fr));
+    const mode=Object.entries(fr).filter(([,c])=>c===mf).map(([v])=>v).join(', ');
+    dom.statAvg.textContent=avg;dom.statMin.textContent=min;dom.statMax.textContent=max;dom.statMode.textContent=mode;
+  } else dom.statsGrid.style.display='none';
+}
+function renderLobbyHint(){
+  if(state.phase===PHASE.LOBBY&&!state.storyTitle){
+    dom.lobbyHint.style.display='';
+    dom.lobbyHint.textContent=state.isAdmin?'Gib einen Story-Titel ein, um die Runde zu starten.':'Warte auf den Admin...';
+  } else dom.lobbyHint.style.display='none';
+}
+function renderAll(){renderParticipants();renderAdminPanel();renderStory();renderCardDeck();renderRevealedCards();renderLobbyHint();}
 
-      peer.on('open', id => {
-        log('Host OPEN, id:', id);
-        myPeerId = id;
-        _setStatus('connected');
-        resolve(id);
-      });
-
-      peer.on('connection', conn => {
-        log('Incoming connection from:', conn.peer);
-        _setupGuest(conn);
-      });
-
-      peer.on('error', err => {
-        log('Host ERROR:', err.type, err.message || '');
-        if (!myPeerId) { _setStatus('disconnected'); reject(err); }
-      });
-
-      peer.on('disconnected', () => {
-        log('Host signaling lost, reconnecting...');
-        if (peer && !peer.destroyed) setTimeout(() => { if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); }, 1000);
-      });
-    });
-  }
-
-  function initGuest(hostId) {
-    isHost = false;
-    return new Promise((resolve, reject) => {
-      _setStatus('connecting');
-      try { peer = _createPeer(); } catch(e) { log('Create failed:', e); _setStatus('disconnected'); return reject(e); }
-
-      let done = false;
-      let timer = null;
-      function settle(ok, err) { if (done) return; done = true; clearTimeout(timer); ok ? resolve() : reject(err || new Error('Failed')); }
-
-      peer.on('open', id => {
-        log('Guest OPEN, id:', id, '→ connecting to host:', hostId);
-        myPeerId = id;
-
-        try {
-          hostConnection = peer.connect(hostId, { reliable: true, serialization: 'json' });
-        } catch(e) { log('connect() failed:', e); _setStatus('disconnected'); return settle(false, e); }
-
-        timer = setTimeout(() => { log('TIMEOUT after', TIMEOUT, 'ms'); _setStatus('disconnected'); settle(false, new Error('Timeout')); }, TIMEOUT);
-
-        hostConnection.on('open', () => {
-          log('DataChannel OPEN to host!');
-          _setStatus('connected');
-          settle(true);
-        });
-
-        hostConnection.on('data', data => {
-          log('← Host:', data.type);
-          if (_onMessage) _onMessage(data, hostId);
-        });
-
-        hostConnection.on('close', () => { log('DataChannel CLOSED'); _setStatus('disconnected'); hostConnection = null; });
-        hostConnection.on('error', err => { log('DataChannel ERROR:', err); _setStatus('disconnected'); settle(false, err); });
-      });
-
-      peer.on('error', err => {
-        log('Guest ERROR:', err.type, err.message || '');
-        _setStatus('disconnected');
-        settle(false, err);
-      });
-
-      peer.on('disconnected', () => {
-        log('Guest signaling lost');
-        if (hostConnection && hostConnection.open) { log('DataChannel still alive, ok'); }
-        else if (peer && !peer.destroyed) setTimeout(() => { if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); }, 2000);
-      });
-    });
-  }
-
-  function _setupGuest(conn) {
-    conn.on('open', () => { log('Guest channel open:', conn.peer); connections.set(conn.peer, conn); if (_onGuestConnected) _onGuestConnected(conn.peer); });
-    conn.on('data', data => { log('← Guest', conn.peer.slice(0,6), ':', data.type); if (_onMessage) _onMessage(data, conn.peer); });
-    conn.on('close', () => { log('Guest left:', conn.peer); connections.delete(conn.peer); if (_onGuestDisconnected) _onGuestDisconnected(conn.peer); });
-    conn.on('error', err => { log('Guest err:', conn.peer, err); connections.delete(conn.peer); if (_onGuestDisconnected) _onGuestDisconnected(conn.peer); });
-  }
-
-  function sendToHost(msg) {
-    if (!hostConnection || !hostConnection.open) { log('WARN: no host conn'); return false; }
-    log('→ Host:', msg.type);
-    hostConnection.send(msg);
-    return true;
-  }
-
-  function sendToGuest(pid, msg) {
-    const c = connections.get(pid);
-    if (!c || !c.open) { log('WARN: guest', pid?.slice(0,6), 'not connected'); return false; }
-    c.send(msg);
-    return true;
-  }
-
-  function broadcast(msg) {
-    let n = 0;
-    connections.forEach(c => { if (c.open) { c.send(msg); n++; } });
-    log('Broadcast', msg.type, 'to', n, 'guests');
-  }
-
-  function destroy() {
-    log('Destroying...');
-    if (peer && !peer.destroyed) peer.destroy();
-    connections.clear(); hostConnection = null; peer = null; myPeerId = null;
-  }
-
-  return {
-    initHost, initGuest, sendToHost, sendToGuest, broadcast, destroy,
-    getMyPeerId() { return myPeerId; },
-    set onMessage(fn) { _onMessage = fn; },
-    set onGuestConnected(fn) { _onGuestConnected = fn; },
-    set onGuestDisconnected(fn) { _onGuestDisconnected = fn; },
-    set onConnectionStatus(fn) { _onConnectionStatus = fn; },
-  };
-})();
-
-// ═══════════════════════════════════════════════════════════════════
-// APP
-// ═══════════════════════════════════════════════════════════════════
-(function() {
-  'use strict';
-  const CARDS = ['1','2','3','5','8','13','21','34','?','☕'];
-  const PHASE = { LOBBY:'lobby', VOTING:'voting', REVEALED:'revealed' };
-
-  function log(...args) { DebugLog.log('App', ...args); }
-
-  const state = {
-    role:null, phase:PHASE.LOBBY, sessionId:'', sessionName:'', storyTitle:'',
-    myId:'', myName:'', myVote:null, participants:[], connected:false,
-  };
-
-  const $ = s => document.querySelector(s);
-  const $$ = s => document.querySelectorAll(s);
-  const dom = {
-    screenHome:$('#screen-home'), screenSession:$('#screen-session'),
-    modalCreate:$('#modal-create'), modalJoin:$('#modal-join'),
-    btnCreate:$('#btn-create'), btnJoinOpen:$('#btn-join-open'),
-    btnCreateConfirm:$('#btn-create-confirm'), btnJoinConfirm:$('#btn-join-confirm'),
-    inputSessionName:$('#input-session-name'), inputAdminName:$('#input-admin-name'),
-    inputJoinId:$('#input-join-id'), inputDisplayName:$('#input-display-name'),
-    sessionTitle:$('#session-title'), sessionIdDisplay:$('#session-id-display'),
-    statusDot:$('#status-dot'), connectionStatus:$('#connection-status'),
-    btnCopyLink:$('#btn-copy-link'),
-    storyBanner:$('#story-banner'), storyTitleDisplay:$('#story-title-display'),
-    adminPanel:$('#admin-panel'), adminLobby:$('#admin-lobby'),
-    adminVoting:$('#admin-voting'), adminRevealed:$('#admin-revealed'),
-    inputStory:$('#input-story'), btnSetStory:$('#btn-set-story'),
-    btnReveal:$('#btn-reveal'), btnNextRound:$('#btn-next-round'), btnEndSession:$('#btn-end-session'),
-    participantList:$('#participant-list'), participantCount:$('#participant-count'),
-    statsGrid:$('#stats-grid'), statAvg:$('#stat-avg'), statMin:$('#stat-min'), statMax:$('#stat-max'), statMode:$('#stat-mode'),
-    revealedSection:$('#revealed-section'), revealedCards:$('#revealed-cards'),
-    lobbyHint:$('#lobby-hint'), cardDock:$('#card-dock'), cardDeck:$('#card-deck'),
-  };
-
-  function genId() { return Math.random().toString(36).slice(2,10); }
-  function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-  function toast(t) {
-    const c=$('#toast-container'), el=document.createElement('div');
-    el.className='toast'; el.textContent=t; c.appendChild(el);
-    setTimeout(()=>{ el.classList.add('toast--exit'); setTimeout(()=>el.remove(),300); },3000);
-  }
-  function showScreen(n) { $$('.screen').forEach(s=>s.classList.remove('active')); $(`#screen-${n}`).classList.add('active'); }
-  function openModal(id) { $(id).classList.add('active'); }
-  function closeModal(id) { $(id).classList.remove('active'); }
-
-  function setConnectionStatus(s) {
-    state.connected = s==='connected';
-    dom.statusDot.classList.toggle('connected', state.connected);
-    dom.connectionStatus.textContent = s==='connected'?'Verbunden':s==='connecting'?'Verbinde...':'Getrennt';
-    renderLobbyHint();
-  }
-
-  // ─── Render ───
-  function renderParticipants() {
-    dom.participantCount.textContent = state.participants.length;
-    dom.participantList.innerHTML = '';
-    state.participants.forEach(p => {
-      const row = document.createElement('div'); row.className='participant-row';
-      const ac = p.isAdmin?'participant-avatar participant-avatar--admin':'participant-avatar';
-      let vh = '';
-      if (state.phase===PHASE.REVEALED && p.vote) vh=`<div class="participant-vote-badge">${esc(p.vote)}</div>`;
-      else if (p.hasVoted) vh='<div class="vote-status">✅</div>';
-      else vh='<div class="vote-status" style="opacity:.4">⬜</div>';
-      row.innerHTML=`<div class="participant-row__left"><div class="${ac}">${esc(p.name.charAt(0).toUpperCase())}</div><div><div class="participant-name">${esc(p.name)}</div>${p.isAdmin?'<div class="participant-badge">Admin</div>':''}</div></div>${vh}`;
-      dom.participantList.appendChild(row);
-    });
-  }
-  function renderAdminPanel() {
-    if (state.role!=='admin'){dom.adminPanel.style.display='none';return;}
-    dom.adminPanel.style.display='';
-    dom.adminLobby.style.display=state.phase===PHASE.LOBBY?'':'none';
-    dom.adminVoting.style.display=state.phase===PHASE.VOTING?'':'none';
-    dom.adminRevealed.style.display=state.phase===PHASE.REVEALED?'':'none';
-  }
-  function renderStory() {
-    if(state.storyTitle){dom.storyBanner.style.display='';dom.storyTitleDisplay.textContent=state.storyTitle;}
-    else dom.storyBanner.style.display='none';
-  }
-  function renderCardDeck() {
-    if(state.phase!==PHASE.VOTING){dom.cardDock.style.display='none';return;}
-    dom.cardDock.style.display=''; dom.cardDeck.innerHTML='';
-    CARDS.forEach(card=>{
-      const el=document.createElement('div');
-      el.className='poker-card'+(state.myVote===card?' selected':'');
-      const em=card==='☕'||card==='?';
-      el.innerHTML=`<div class="poker-card__inner"><div class="poker-card__front${em?' emoji':''}">${esc(card)}</div><div class="poker-card__back">${esc(card)}</div></div>`;
-      el.addEventListener('click',()=>handleVote(card));
-      dom.cardDeck.appendChild(el);
-    });
-  }
-  function renderRevealedCards() {
-    if(state.phase!==PHASE.REVEALED){dom.revealedSection.style.display='none';dom.statsGrid.style.display='none';return;}
-    const voted=state.participants.filter(p=>p.vote);
-    if(!voted.length){dom.revealedSection.style.display='none';dom.statsGrid.style.display='none';return;}
-    dom.revealedSection.style.display=''; dom.revealedCards.innerHTML='';
-    voted.forEach((p,i)=>{
-      const it=document.createElement('div'); it.className='revealed-card-item'; it.style.animationDelay=`${i*.1}s`;
-      it.innerHTML=`<div class="poker-card flipped disabled" style="width:64px;height:88px"><div class="poker-card__inner"><div class="poker-card__front">?</div><div class="poker-card__back">${esc(p.vote)}</div></div></div><div class="revealed-card-name">${esc(p.name)}</div>`;
-      dom.revealedCards.appendChild(it);
-    });
-    const nv=voted.filter(p=>!isNaN(Number(p.vote))).map(p=>Number(p.vote));
-    if(nv.length){
-      dom.statsGrid.style.display='';
-      const avg=(nv.reduce((a,b)=>a+b,0)/nv.length).toFixed(1), min=Math.min(...nv), max=Math.max(...nv);
-      const fr={}; nv.forEach(v=>fr[v]=(fr[v]||0)+1); const mf=Math.max(...Object.values(fr));
-      const mode=Object.entries(fr).filter(([,c])=>c===mf).map(([v])=>v).join(', ');
-      dom.statAvg.textContent=avg; dom.statMin.textContent=min; dom.statMax.textContent=max; dom.statMode.textContent=mode;
-    } else dom.statsGrid.style.display='none';
-  }
-  function renderLobbyHint() {
-    if(state.phase===PHASE.LOBBY&&!state.storyTitle){
-      dom.lobbyHint.style.display='';
-      dom.lobbyHint.textContent = state.role==='admin' ? 'Gib einen Story-Titel ein, um die Runde zu starten.'
-        : state.connected ? 'Verbunden! Warte auf den Admin...' : 'Verbindung wird aufgebaut...';
-    } else dom.lobbyHint.style.display='none';
-  }
-  function renderAll(){renderParticipants();renderAdminPanel();renderStory();renderCardDeck();renderRevealedCards();renderLobbyHint();}
-
-  // ─── PeerJS Events ───
-  PeerManager.onConnectionStatus = setConnectionStatus;
-  PeerManager.onGuestConnected = pid => log('Guest peer connected:', pid);
-  PeerManager.onGuestDisconnected = pid => {
-    const p=state.participants.find(x=>x.peerId===pid);
-    if(p){state.participants=state.participants.filter(x=>x.peerId!==pid);toast(`${p.name} hat verlassen`);broadcastPU();renderAll();}
-  };
-  PeerManager.onMessage = (msg, from) => {
-    log('MSG:', msg.type, 'from', from?.slice(0,6));
-    state.role==='admin' ? handleHostMsg(msg,from) : handleGuestMsg(msg);
-  };
-
-  // ─── Host Messages ───
-  function handleHostMsg(msg, from) {
-    if(msg.type==='USER_JOIN'){
-      if(state.participants.find(p=>p.peerId===from)){log('Duplicate join, resending sync');sendSync(from);return;}
-      const p={id:msg.userId||genId(),name:msg.name,peerId:from,hasVoted:false,vote:null,isAdmin:false};
-      state.participants.push(p); toast(`${p.name} ist beigetreten`);
-      sendSync(from); broadcastPU(); renderAll();
-    } else if(msg.type==='VOTE'){
-      const p=state.participants.find(x=>x.peerId===from);
-      if(p&&state.phase===PHASE.VOTING){p.hasVoted=true;p.vote=msg.vote;broadcastPU();renderAll();}
-    }
-  }
-  function sendSync(pid) {
-    PeerManager.sendToGuest(pid,{type:'SYNC_STATE',story:state.storyTitle,phase:state.phase,sessionName:state.sessionName,
-      participants:state.participants.map(p=>({id:p.id,name:p.name,hasVoted:p.hasVoted,isAdmin:p.isAdmin,vote:state.phase===PHASE.REVEALED?p.vote:null}))});
-  }
-
-  // ─── Guest Messages ───
-  function handleGuestMsg(msg) {
-    if(msg.type==='SYNC_STATE'){
-      log('SYNC_STATE received');
-      state.storyTitle=msg.story||'';state.phase=msg.phase||PHASE.LOBBY;state.sessionName=msg.sessionName||state.sessionName;
-      state.participants=msg.participants||[];
-      if(!state.participants.find(p=>p.id===state.myId))state.participants.push({id:state.myId,name:state.myName,hasVoted:false,isAdmin:false,vote:null});
-      dom.sessionTitle.textContent=state.sessionName||'Planning Poker'; state.myVote=null;
-      toast('Mit Session verbunden!'); renderAll();
-    } else if(msg.type==='PARTICIPANT_UPDATE'){
-      if(msg.participants)state.participants=msg.participants.map(p=>p.id===state.myId?{...p,vote:state.myVote||p.vote}:p);
-      renderAll();
-    } else if(msg.type==='SET_STORY'){
-      state.storyTitle=msg.title||'';state.phase=PHASE.VOTING;state.myVote=null;
-      state.participants=state.participants.map(p=>({...p,hasVoted:false,vote:null}));
-      toast(`Neue Story: ${msg.title}`); renderAll();
-    } else if(msg.type==='REVEAL_VOTES'){
-      state.phase=PHASE.REVEALED;
-      if(msg.votes)msg.votes.forEach(v=>{const p=state.participants.find(x=>x.id===v.userId);if(p){p.vote=v.vote;p.hasVoted=true;}});
-      toast('Karten aufgedeckt!'); renderAll();
-    } else if(msg.type==='RESET_ROUND'){
-      state.phase=PHASE.LOBBY;state.storyTitle='';state.myVote=null;
-      state.participants=state.participants.map(p=>({...p,hasVoted:false,vote:null}));
-      toast('Neue Runde'); renderAll();
-    } else if(msg.type==='END_SESSION'){
-      toast('Session beendet');PeerManager.destroy();showScreen('home');
-    }
-  }
-
-  function broadcastPU(){
-    PeerManager.broadcast({type:'PARTICIPANT_UPDATE',participants:state.participants.map(p=>({id:p.id,name:p.name,hasVoted:p.hasVoted,isAdmin:p.isAdmin,vote:state.phase===PHASE.REVEALED?p.vote:null}))});
-  }
-
-  // ─── Actions ───
-  function handleVote(card){
-    if(state.phase!==PHASE.VOTING)return; state.myVote=card;
-    if(state.role==='admin'){
-      const me=state.participants.find(p=>p.isAdmin); if(me){me.hasVoted=true;me.vote=card;} broadcastPU();
-    } else {
-      if(!PeerManager.sendToHost({type:'VOTE',userId:state.myId,vote:card}))toast('Vote konnte nicht gesendet werden.');
-      const me=state.participants.find(p=>p.id===state.myId); if(me){me.hasVoted=true;me.vote=card;}
-    }
+// ═══ Firebase Listeners ═══
+let unsubs=[];
+function subscribeToSession(){
+  // Listen to session state
+  unsubs.push(onValue(sessionRef('state'),snap=>{
+    const d=snap.val();
+    if(!d)return;
+    state.phase=d.phase||PHASE.LOBBY;
+    state.storyTitle=d.storyTitle||'';
+    state.sessionName=d.sessionName||'Planning Poker';
+    dom.sessionTitle.textContent=state.sessionName;
+    // Reset local vote on new round
+    if(state.phase===PHASE.LOBBY)state.myVote=null;
     renderAll();
-  }
-  function handleSetStory(){
-    const t=dom.inputStory.value.trim(); if(!t||state.role!=='admin')return;
-    state.storyTitle=t;state.phase=PHASE.VOTING;state.myVote=null;
-    state.participants=state.participants.map(p=>({...p,hasVoted:false,vote:null}));
-    dom.inputStory.value=''; PeerManager.broadcast({type:'SET_STORY',title:t}); toast(`Story: ${t}`); renderAll();
-  }
-  function handleReveal(){
-    if(state.role!=='admin')return; state.phase=PHASE.REVEALED;
-    const votes=state.participants.filter(p=>p.vote).map(p=>({userId:p.id,name:p.name,vote:p.vote}));
-    PeerManager.broadcast({type:'REVEAL_VOTES',votes}); broadcastPU(); toast('Aufgedeckt!'); renderAll();
-  }
-  function handleNewRound(){
-    if(state.role!=='admin')return; state.phase=PHASE.LOBBY;state.storyTitle='';state.myVote=null;
-    state.participants=state.participants.map(p=>({...p,hasVoted:false,vote:null}));
-    PeerManager.broadcast({type:'RESET_ROUND'}); toast('Neue Runde'); renderAll();
-  }
-  function handleEndSession(){
-    PeerManager.broadcast({type:'END_SESSION'});PeerManager.destroy();
-    state.role=null;state.phase=PHASE.LOBBY;state.participants=[];state.myVote=null;state.storyTitle='';state.sessionId='';
-    showScreen('home'); toast('Session beendet');
-  }
+  }));
+  // Listen to participants
+  unsubs.push(onValue(sessionRef('participants'),snap=>{
+    state.participants=snap.val()||{};
+    renderAll();
+  }));
+}
+function unsubscribeAll(){unsubs.forEach(u=>{if(typeof u==='function')u()});unsubs=[];}
 
-  // ─── Create / Join ───
-  async function createSession(){
-    const adminName=dom.inputAdminName.value.trim();
-    if(!adminName)return;
-    state.role='admin';state.myId=genId();state.myName=adminName;
-    state.sessionName=dom.inputSessionName.value.trim()||'Planning Poker';
-    state.phase=PHASE.LOBBY;
-    state.participants=[{id:state.myId,name:adminName,peerId:null,hasVoted:false,vote:null,isAdmin:true}];
-    closeModal('#modal-create');showScreen('session');renderAll();
-    try{
-      const pid=await PeerManager.initHost();
-      state.sessionId=pid; dom.sessionTitle.textContent=state.sessionName;
-      dom.sessionIdDisplay.textContent=`ID: ${pid.slice(0,12)}`;
-      log('Session created:', pid); toast('Session erstellt!');
-    }catch(e){log('Create error:',e);toast('Fehler: '+(e.message||'Unbekannt'));}
+// ═══ Actions ═══
+async function handleVote(card){
+  if(state.phase!==PHASE.VOTING)return;
+  state.myVote=card;
+  await update(sessionRef(`participants/${state.myId}`),{hasVoted:true,vote:card});
+  renderCardDeck();
+}
+async function handleSetStory(){
+  const t=dom.inputStory.value.trim();if(!t||!state.isAdmin)return;
+  dom.inputStory.value='';
+  // Reset all votes
+  const ps=Object.keys(state.participants);
+  const updates={};
+  updates['state/storyTitle']=t;
+  updates['state/phase']=PHASE.VOTING;
+  ps.forEach(id=>{updates[`participants/${id}/hasVoted`]=false;updates[`participants/${id}/vote`]=null;});
+  await update(sessionRef(),updates);
+  state.myVote=null;
+  toast(`Story: ${t}`);
+}
+async function handleReveal(){
+  if(!state.isAdmin)return;
+  await update(sessionRef('state'),{phase:PHASE.REVEALED});
+  toast('Aufgedeckt!');
+}
+async function handleNewRound(){
+  if(!state.isAdmin)return;
+  const ps=Object.keys(state.participants);
+  const updates={};
+  updates['state/phase']=PHASE.LOBBY;
+  updates['state/storyTitle']='';
+  ps.forEach(id=>{updates[`participants/${id}/hasVoted`]=false;updates[`participants/${id}/vote`]=null;});
+  await update(sessionRef(),updates);
+  state.myVote=null;
+  toast('Neue Runde');
+}
+async function handleEndSession(){
+  await remove(sessionRef());
+  unsubscribeAll();
+  state.role=null;state.phase=PHASE.LOBBY;state.participants={};state.myVote=null;state.storyTitle='';state.sessionId='';state.isAdmin=false;
+  showScreen('home');toast('Session beendet');
+}
+
+// ═══ Create / Join ═══
+async function createSession(){
+  const name=dom.inputAdminName.value.trim();if(!name)return;
+  state.myId=genId();state.myName=name;state.isAdmin=true;state.role='admin';
+  state.sessionId=genId();
+  state.sessionName=dom.inputSessionName.value.trim()||'Planning Poker';
+  // Write session to Firebase
+  await set(sessionRef(),{
+    state:{phase:PHASE.LOBBY,storyTitle:'',sessionName:state.sessionName,adminId:state.myId,createdAt:Date.now()},
+    participants:{[state.myId]:{name,isAdmin:true,hasVoted:false,vote:null}}
+  });
+  // Remove participant on disconnect
+  onDisconnect(sessionRef(`participants/${state.myId}`)).remove();
+  dom.sessionTitle.textContent=state.sessionName;
+  dom.sessionIdDisplay.textContent=`ID: ${state.sessionId}`;
+  closeModal('#modal-create');showScreen('session');
+  subscribeToSession();
+  toast('Session erstellt!');
+}
+
+async function joinSession(){
+  const name=dom.inputDisplayName.value.trim(),jid=dom.inputJoinId.value.trim();
+  if(!name||!jid)return;
+  state.myId=genId();state.myName=name;state.sessionId=jid;state.role='guest';state.isAdmin=false;
+  // Check if session exists
+  const snap=await get(sessionRef('state'));
+  if(!snap.exists()){toast('Session nicht gefunden.');return;}
+  const sdata=snap.val();
+  state.sessionName=sdata.sessionName||'Planning Poker';
+  // Add self as participant
+  await set(sessionRef(`participants/${state.myId}`),{name,isAdmin:false,hasVoted:false,vote:null});
+  // Remove on disconnect
+  onDisconnect(sessionRef(`participants/${state.myId}`)).remove();
+  dom.sessionTitle.textContent=state.sessionName;
+  dom.sessionIdDisplay.textContent=`ID: ${jid}`;
+  closeModal('#modal-join');showScreen('session');
+  subscribeToSession();
+  toast(`Willkommen, ${name}!`);
+}
+
+// ═══ Init ═══
+function init(){
+  if(!isConfigured)return;
+
+  $('#btn-create').addEventListener('click',()=>openModal('#modal-create'));
+  $('#btn-join-open').addEventListener('click',()=>openModal('#modal-join'));
+  dom.modalCreate.addEventListener('click',()=>closeModal('#modal-create'));
+  dom.modalJoin.addEventListener('click',()=>closeModal('#modal-join'));
+
+  dom.inputAdminName.addEventListener('input',()=>{dom.btnCreateConfirm.disabled=!dom.inputAdminName.value.trim()});
+  dom.inputAdminName.addEventListener('keydown',e=>{if(e.key==='Enter'&&dom.inputAdminName.value.trim())createSession()});
+  dom.inputSessionName.addEventListener('keydown',e=>{if(e.key==='Enter'&&dom.inputAdminName.value.trim())createSession()});
+  dom.btnCreateConfirm.addEventListener('click',createSession);
+
+  function upd(){dom.btnJoinConfirm.disabled=!(dom.inputDisplayName.value.trim()&&dom.inputJoinId.value.trim())}
+  dom.inputDisplayName.addEventListener('input',upd);
+  dom.inputJoinId.addEventListener('input',upd);
+  dom.inputDisplayName.addEventListener('keydown',e=>{if(e.key==='Enter')joinSession()});
+  dom.inputJoinId.addEventListener('keydown',e=>{if(e.key==='Enter')dom.inputDisplayName.focus()});
+  dom.btnJoinConfirm.addEventListener('click',joinSession);
+
+  dom.btnCopyLink.addEventListener('click',()=>{
+    const link=window.location.origin+window.location.pathname+'#join/'+state.sessionId;
+    navigator.clipboard.writeText(link).then(()=>{
+      dom.btnCopyLink.textContent='✓ Kopiert';dom.btnCopyLink.classList.add('copied');
+      setTimeout(()=>{dom.btnCopyLink.textContent='Link kopieren';dom.btnCopyLink.classList.remove('copied')},2000);
+      toast('Link kopiert!');
+    }).catch(()=>prompt('Link:',link));
+  });
+  $('#btn-set-story').addEventListener('click',handleSetStory);
+  dom.inputStory.addEventListener('keydown',e=>{if(e.key==='Enter')handleSetStory()});
+  $('#btn-reveal').addEventListener('click',handleReveal);
+  $('#btn-next-round').addEventListener('click',handleNewRound);
+  $('#btn-end-session').addEventListener('click',handleEndSession);
+
+  // URL hash join
+  const hash=window.location.hash;
+  if(hash.startsWith('#join/')){
+    const pid=hash.slice(6);
+    if(pid){dom.inputJoinId.value=pid;openModal('#modal-join');setTimeout(()=>dom.inputDisplayName.focus(),100);}
+    showScreen('home');
+  } else {
+    showScreen('home');
   }
-
-  async function joinSession(){
-    const name=dom.inputDisplayName.value.trim(), jid=dom.inputJoinId.value.trim();
-    if(!name||!jid)return;
-    state.role='guest';state.myId=genId();state.myName=name;state.sessionId=jid;
-    state.sessionName='Planning Poker';state.phase=PHASE.LOBBY;state.participants=[];
-    dom.sessionTitle.textContent=state.sessionName;dom.sessionIdDisplay.textContent=`ID: ${jid.slice(0,12)}`;
-    closeModal('#modal-join');showScreen('session');setConnectionStatus('connecting');renderAll();
-    try{
-      log('Connecting to host:', jid);
-      await PeerManager.initGuest(jid);
-      log('Connected! Sending USER_JOIN...');
-      // Short delay to ensure DataChannel is stable
-      await new Promise(r=>setTimeout(r,300));
-      const sent=PeerManager.sendToHost({type:'USER_JOIN',userId:state.myId,name:name});
-      if(sent){log('USER_JOIN sent');toast(`Willkommen, ${name}!`);}
-      else{
-        log('USER_JOIN failed, retrying in 1s...');
-        setTimeout(()=>{
-          const r=PeerManager.sendToHost({type:'USER_JOIN',userId:state.myId,name:name});
-          log('Retry result:',r);
-          if(!r)toast('Verbindung fehlgeschlagen. Bitte Seite neu laden.');
-        },1000);
-      }
-    }catch(e){
-      log('Join error:',e.message);
-      toast(e.message==='Timeout'?'Timeout — ist die Session noch aktiv?':'Verbindung fehlgeschlagen.');
-    }
-  }
-
-  // ─── Init ───
-  function init(){
-    log('App init, hash:', window.location.hash);
-
-    dom.btnCreate.addEventListener('click',()=>openModal('#modal-create'));
-    dom.btnJoinOpen.addEventListener('click',()=>openModal('#modal-join'));
-    dom.modalCreate.addEventListener('click',()=>closeModal('#modal-create'));
-    dom.modalJoin.addEventListener('click',()=>closeModal('#modal-join'));
-    dom.inputAdminName.addEventListener('input',()=>{dom.btnCreateConfirm.disabled=!dom.inputAdminName.value.trim();});
-    dom.inputAdminName.addEventListener('keydown',e=>{if(e.key==='Enter'){if(dom.inputAdminName.value.trim())createSession();}});
-    dom.inputSessionName.addEventListener('keydown',e=>{if(e.key==='Enter'){if(dom.inputAdminName.value.trim())createSession();}});
-    dom.btnCreateConfirm.addEventListener('click',createSession);
-
-    function upd(){dom.btnJoinConfirm.disabled=!(dom.inputDisplayName.value.trim()&&dom.inputJoinId.value.trim());}
-    dom.inputDisplayName.addEventListener('input',upd);
-    dom.inputJoinId.addEventListener('input',upd);
-    dom.inputDisplayName.addEventListener('keydown',e=>{if(e.key==='Enter')joinSession();});
-    dom.inputJoinId.addEventListener('keydown',e=>{if(e.key==='Enter')dom.inputDisplayName.focus();});
-    dom.btnJoinConfirm.addEventListener('click',joinSession);
-
-    dom.btnCopyLink.addEventListener('click',()=>{
-      const link=window.location.origin+window.location.pathname+'#join/'+state.sessionId;
-      navigator.clipboard.writeText(link).then(()=>{
-        dom.btnCopyLink.textContent='✓ Kopiert';dom.btnCopyLink.classList.add('copied');
-        setTimeout(()=>{dom.btnCopyLink.textContent='Link kopieren';dom.btnCopyLink.classList.remove('copied');},2000);
-        toast('Link kopiert!');
-      }).catch(()=>prompt('Link:',link));
-    });
-    dom.btnSetStory.addEventListener('click',handleSetStory);
-    dom.inputStory.addEventListener('keydown',e=>{if(e.key==='Enter')handleSetStory();});
-    dom.btnReveal.addEventListener('click',handleReveal);
-    dom.btnNextRound.addEventListener('click',handleNewRound);
-    dom.btnEndSession.addEventListener('click',handleEndSession);
-
-    // Check URL hash
-    const hash=window.location.hash;
-    if(hash.startsWith('#join/')){
-      const pid=hash.slice(6);
-      if(pid){log('Join link detected:',pid);dom.inputJoinId.value=pid;openModal('#modal-join');setTimeout(()=>dom.inputDisplayName.focus(),100);}
-    }
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
+}
+init();
 </script>
 </body>
 </html>
