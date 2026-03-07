@@ -7,5 +7,5 @@ export default {
   projectId: "shlareut-planning-poker",
   storageBucket: "shlareut-planning-poker.firebasestorage.app",
   messagingSenderId: "944156062331",
-  appId: "1:944156062331:web:f8c2b367576fd4fb1ce8de"
+  appId: "1:944156062331:web:c2d7891036e4e9ca1ce8de"
 };
