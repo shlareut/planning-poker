@@ -28,9 +28,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes cardReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes emojiThrow{
-  0%{transform:translate(var(--sx),var(--sy)) scale(.6) rotate(0deg);opacity:1}
-  50%{transform:translate(var(--mx),var(--my)) scale(1) rotate(calc(var(--rot) * .5));opacity:1}
-  100%{transform:translate(var(--ex),var(--ey)) scale(.5) rotate(var(--rot));opacity:0}
+  0%{transform:translate(var(--sx),var(--sy)) scale(.7) rotate(0deg)}
+  25%{transform:translate(var(--p1x),var(--p1y)) scale(.9) rotate(calc(var(--rot) * .25))}
+  50%{transform:translate(var(--mx),var(--my)) scale(1) rotate(calc(var(--rot) * .5))}
+  75%{transform:translate(var(--p2x),var(--p2y)) scale(.9) rotate(calc(var(--rot) * .75))}
+  100%{transform:translate(var(--ex),var(--ey)) scale(.7) rotate(var(--rot))}
 }
 .fade-up{animation:fadeUp .6s ease}
 
@@ -173,8 +175,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 .flying-emoji{
   position:fixed;left:0;top:0;font-size:24px;pointer-events:none;z-index:9998;
-  will-change:transform,opacity;
-  animation:emojiThrow .7s cubic-bezier(.2,.6,.35,1) forwards;
+  will-change:transform;
+  animation:emojiThrow 1.1s ease-in-out forwards;
 }
 
 .config-missing{max-width:480px;margin:60px auto;padding:24px;text-align:center}
@@ -521,24 +523,35 @@ function animateEmoji(emoji, targetPid){
   const sx=fromLeft? -30 : window.innerWidth+10;
   const sy=ey+(Math.random()*100-50);
 
-  // Midpoint: halfway horizontally, arced upward
+  // Arc: compute a parabolic arc with 5 points
+  // Midpoint (highest point of arc)
   const mx=(sx+ex)/2;
-  const my=Math.min(sy,ey)-60-Math.random()*40;
+  const arcHeight=70+Math.random()*50;
+  const my=Math.min(sy,ey)-arcHeight;
+  // Quarter points (between start-mid and mid-end)
+  const p1x=sx+(mx-sx)*.5;
+  const p1y=sy+(my-sy)*.75;  // rise quickly
+  const p2x=mx+(ex-mx)*.5;
+  const p2y=my+(ey-my)*.25;  // stay high longer, then drop
 
-  const rot=(fromLeft?1:-1)*(120+Math.random()*120);
+  const rot=(fromLeft?1:-1)*(100+Math.random()*100);
 
   const el=document.createElement('div');
   el.className='flying-emoji';
   el.textContent=emoji;
   el.style.setProperty('--sx',sx+'px');
   el.style.setProperty('--sy',sy+'px');
+  el.style.setProperty('--p1x',p1x+'px');
+  el.style.setProperty('--p1y',p1y+'px');
   el.style.setProperty('--mx',mx+'px');
   el.style.setProperty('--my',my+'px');
+  el.style.setProperty('--p2x',p2x+'px');
+  el.style.setProperty('--p2y',p2y+'px');
   el.style.setProperty('--ex',ex+'px');
   el.style.setProperty('--ey',ey+'px');
   el.style.setProperty('--rot',rot+'deg');
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(),800);
+  setTimeout(()=>el.remove(),1200);
 }
 
 // ═══ Firebase Listeners ═══
