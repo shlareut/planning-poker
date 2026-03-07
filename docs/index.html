@@ -28,9 +28,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes cardReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes emojiThrow{
-  0%{offset-distance:0%;opacity:1;transform:scale(.6) rotate(0deg)}
-  70%{opacity:1;transform:scale(1.05) rotate(var(--rot))}
-  100%{offset-distance:100%;opacity:0;transform:scale(.4) rotate(var(--rot))}
+  0%{transform:translate(var(--sx),var(--sy)) scale(.6) rotate(0deg);opacity:1}
+  50%{transform:translate(var(--mx),var(--my)) scale(1) rotate(calc(var(--rot) * .5));opacity:1}
+  100%{transform:translate(var(--ex),var(--ey)) scale(.5) rotate(var(--rot));opacity:0}
 }
 .fade-up{animation:fadeUp .6s ease}
 
@@ -172,9 +172,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .emoji-btn.selected-emoji{border-color:var(--primary);background:rgba(0,78,250,.2);box-shadow:0 0 12px var(--primary-glow)}
 
 .flying-emoji{
-  position:fixed;font-size:24px;pointer-events:none;z-index:9998;
-  will-change:transform,opacity,offset-distance;
-  animation:emojiThrow .75s cubic-bezier(.25,.1,.25,1) forwards;
+  position:fixed;left:0;top:0;font-size:24px;pointer-events:none;z-index:9998;
+  will-change:transform,opacity;
+  animation:emojiThrow .7s cubic-bezier(.2,.6,.35,1) forwards;
 }
 
 .config-missing{max-width:480px;margin:60px auto;padding:24px;text-align:center}
@@ -513,47 +513,32 @@ function animateEmoji(emoji, targetPid){
   if(!targetAvatar)return;
 
   const rect=targetAvatar.getBoundingClientRect();
-  const tx=rect.left+rect.width/2;
-  const ty=rect.top+rect.height/2;
+  const ex=rect.left+rect.width/2-12;
+  const ey=rect.top+rect.height/2-12;
 
   // Start from random left or right edge
   const fromLeft=Math.random()>.5;
-  const sx=fromLeft? -20 : window.innerWidth+20;
-  const sy=ty+(Math.random()*120-60);
+  const sx=fromLeft? -30 : window.innerWidth+10;
+  const sy=ey+(Math.random()*100-50);
 
-  // Control point for quadratic bezier (arc peak above the midpoint)
-  const cx=(sx+tx)/2;
-  const cy=Math.min(sy,ty)-80-Math.random()*60;
+  // Midpoint: halfway horizontally, arced upward
+  const mx=(sx+ex)/2;
+  const my=Math.min(sy,ey)-60-Math.random()*40;
+
+  const rot=(fromLeft?1:-1)*(120+Math.random()*120);
 
   const el=document.createElement('div');
   el.className='flying-emoji';
   el.textContent=emoji;
-  el.style.left='0px';
-  el.style.top='0px';
+  el.style.setProperty('--sx',sx+'px');
+  el.style.setProperty('--sy',sy+'px');
+  el.style.setProperty('--mx',mx+'px');
+  el.style.setProperty('--my',my+'px');
+  el.style.setProperty('--ex',ex+'px');
+  el.style.setProperty('--ey',ey+'px');
+  el.style.setProperty('--rot',rot+'deg');
   document.body.appendChild(el);
-
-  const duration=650;
-  const rotEnd=(fromLeft?1:-1)*(200+Math.random()*160);
-  const start=performance.now();
-
-  function frame(now){
-    let t=(now-start)/duration;
-    if(t>1)t=1;
-    // Ease out cubic
-    const e=1-Math.pow(1-t,3);
-    // Quadratic bezier: B(t) = (1-t)²·P0 + 2(1-t)t·C + t²·P1
-    const u=1-e;
-    const x=u*u*sx + 2*u*e*cx + e*e*tx;
-    const y=u*u*sy + 2*u*e*cy + e*e*ty;
-    const scale=t<.7 ? .6+t*(.45/.7) : 1.05-(t-.7)*(.65/.3);
-    const rot=e*rotEnd;
-    const opacity=t>.75 ? 1-(t-.75)/.25 : 1;
-    el.style.transform=`translate(${x}px,${y}px) scale(${scale}) rotate(${rot}deg)`;
-    el.style.opacity=opacity;
-    if(t<1){requestAnimationFrame(frame)}
-    else{el.remove()}
-  }
-  requestAnimationFrame(frame);
+  setTimeout(()=>el.remove(),800);
 }
 
 // ═══ Firebase Listeners ═══
